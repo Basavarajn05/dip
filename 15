@@ -1,0 +1,42 @@
+import cv2
+import numpy as np
+
+def block_truncation_coding(input_image_path, output_image_path, block_size=8):
+    # Read the image in grayscale
+    input_image = cv2.imread(input_image_path, cv2.IMREAD_GRAYSCALE)
+    height, width = input_image.shape
+
+    # Divide the image into blocks
+    num_blocks_h = height // block_size
+    num_blocks_w = width // block_size
+
+    # Initialize the compressed image
+    compressed_image = np.zeros((height, width), dtype=np.uint8)
+
+    # Process each block
+    for i in range(num_blocks_h):
+        for j in range(num_blocks_w):
+            # Extract the current block
+            block = input_image[i*block_size:(i+1)*block_size, j*block_size:(j+1)*block_size]
+
+            # Calculate the mean and standard deviation of the block
+            block_mean = np.mean(block)
+            block_std = np.std(block)
+
+            # Threshold the block based on its mean
+            threshold = block_mean
+
+            # Set pixel values in the block according to the threshold
+            compressed_block = np.where(block <= threshold, 0, 255)
+
+            # Update the compressed image with the thresholded block
+            compressed_image[i*block_size:(i+1)*block_size, j*block_size:(j+1)*block_size] = compressed_block
+
+    # Write the compressed image
+    cv2.imwrite(output_image_path, compressed_image)
+
+# Example usage
+input_image_path = 'uvce.jpg'
+output_image_path = 'compressed_image.jpg'
+block_size = 8  # Size of the block (in pixels)
+block_truncation_coding(input_image_path, output_image_path, block_size)
