@@ -1,0 +1,44 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+def fft_convolve(img, kernel):
+    # Perform the FFT of the image
+    f = np.fft.fft2(img)
+    fshift = np.fft.fftshift(f)  # Shift the zero frequency component to the center
+    fshift_filtered = fshift * kernel  # Apply the filter in the frequency domain
+    f_ishift = np.fft.ifftshift(fshift_filtered)  # Shift back
+    img_back = np.fft.ifft2(f_ishift)  # Perform the inverse FFT
+    img_back = np.abs(img_back)  # Get the magnitude
+    return img_back
+
+# Load the image
+Original_img = cv2.imread('flower.jpg')
+img = cv2.imread('flower.jpg', cv2.IMREAD_GRAYSCALE)
+
+# Calculate the size of the image
+rows, cols = img.shape
+
+# Create a mask for the low-pass filter
+mask_lp = np.zeros((rows, cols), np.uint8)
+center = (rows // 2, cols // 2)
+radius = 30
+cv2.circle(mask_lp, center, radius, 1, -1)
+
+# Create a mask for the high-pass filter
+mask_hp = np.ones((rows, cols), np.uint8)
+cv2.circle(mask_hp, center, radius, 0, -1)
+
+# Apply low-pass filter
+smoothed_img_lp = fft_convolve(img, mask_lp)
+
+# Apply high-pass filter
+smoothed_img_hp = fft_convolve(img, mask_hp)
+
+# Display the original image and filtered images
+plt.figure(figsize=(12, 6))
+plt.subplot(131), plt.imshow(cv2.cvtColor(Original_img, cv2.COLOR_BGR2RGB)), plt.title('Original Image'), plt.axis('off')
+plt.subplot(132), plt.imshow(smoothed_img_lp, cmap='gray'), plt.title('Low-pass Filter'), plt.axis('off')
+plt.subplot(133), plt.imshow(smoothed_img_hp, cmap='gray'), plt.title('High-pass Filter'), plt.axis('off')
+plt.tight_layout()
+plt.show()
