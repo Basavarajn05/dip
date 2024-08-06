@@ -1,0 +1,41 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load the image
+image = cv2.imread('nature1.jpg', cv2.IMREAD_GRAYSCALE)
+
+# Define the kernel size
+kernel_size = 3
+
+# Define the low-pass filter kernel
+kernel_lp = np.ones((kernel_size, kernel_size), np.float32) / (kernel_size * kernel_size)
+
+# Apply the low-pass filter
+smoothed_image_lp = cv2.filter2D(image, -1, kernel_lp)
+
+# Define the high-pass filter kernel
+kernel_hp = np.array([[0, -1, 0], [-1, 4, -1], [0, -1, 0]])
+
+# Apply the high-pass filter
+smoothed_image_hp = cv2.filter2D(image, -1, kernel_hp)
+
+# Display the original image and the filtered images
+plt.figure(figsize=(12, 6))
+plt.subplot(131)
+plt.imshow(image, cmap='gray')
+plt.title('Original Image')
+plt.axis('off')
+
+plt.subplot(132)
+plt.imshow(smoothed_image_lp, cmap='gray')
+plt.title('Low-pass Filtered Image')
+plt.axis('off')
+
+plt.subplot(133)
+plt.imshow(smoothed_image_hp, cmap='gray')
+plt.title('High-pass Filtered Image')
+plt.axis('off')
+
+plt.tight_layout()
+plt.show()
