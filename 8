@@ -1,0 +1,27 @@
+import cv2
+from matplotlib import pyplot as plt
+
+def remove_salt_and_pepper_noise(image):
+    # Apply median filter to remove salt and pepper noise
+    return cv2.medianBlur(image, 5)  # Kernel size 5x5
+
+# Read the noisy image
+noisy_img = cv2.imread('OIP.jpg', cv2.IMREAD_GRAYSCALE)  # Read as grayscale
+
+# Remove salt and pepper noise using median filter
+denoised_img = remove_salt_and_pepper_noise(noisy_img)
+
+# Display the noisy and denoised images
+plt.figure(figsize=(12, 6))
+plt.subplot(121)
+plt.imshow(noisy_img, cmap='gray')
+plt.title('Noisy Image')
+plt.axis('off')
+
+plt.subplot(122)
+plt.imshow(denoised_img, cmap='gray')
+plt.title('Denoised Image')
+plt.axis('off')
+
+plt.tight_layout()
+plt.show()
